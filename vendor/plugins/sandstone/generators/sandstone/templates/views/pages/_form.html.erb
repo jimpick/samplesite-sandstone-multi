@@ -1,0 +1,101 @@
+<%= error_messages_for :page %>
+
+<% form_for(page) do |f| %>
+<div>
+  <label for="page_path">Page URL</label>
+  <%= defined?(root_url) ? root_url : 'http://YOURSITE/' %><%= f.text_field :path %>
+</div>
+
+<% if editor.manager? && !page.new_record? -%>
+<div>
+  <label for="page_editor_id">Assigned To</label>
+  <%= f.select :editor_id, editors_for(page) %>
+</div>
+<% end -%>
+
+<div>
+  <label for="page_parent_id">Parent Page</label>
+  <%= page.could_have_parent? ? f.select(:parent_id, parent_pages_for(page)) : 'none' %>
+</div>
+
+<div>
+  <label for="page_page_template_id">Template</label>
+  <%= PageTemplate.count > 0 ? f.select(:page_template_id, templates) : 'default' -%>
+</div>
+
+<div>
+  <label for="page_title">Title</label>
+  <%= f.text_field :title %>
+</div>
+
+<div>
+  <label for="page_content">Content</label>
+  <%= f.text_area :content %>
+</div>
+
+<div>
+  <%= f.submit "Save as Draft", :name => 'page[draft]' %>
+  <%= f.submit "Save and Submit For Approval", :name => 'page[approve]' %>
+  <%= f.submit "Publish", :name => 'page[publish]' if editor.manager? %>
+  <%= link_to_function 'preview', "new Ajax.Request('#{preview_url}', {
+    asynchronous:true, 
+    evalScripts:true, 
+    method:'post', 
+    parameters:Form.serialize(this.parentNode.parentNode),
+    onComplete:function(response) {
+      var popup = window.open('', 'previewWindow');
+      popup.document.write(response.responseText);
+      popup.document.close();
+    }
+  })" %>
+</div>
+
+<div class="additional-fields">
+  <p><%= link_to_function 'manage expiration', 'new Effect.Appear("page-expiration")' %></p>
+  <fieldset id="page-expiration" style="display:none;">
+    <div>
+      <label for="page_active_at">Active at</label>
+      <%= f.text_field :active_at %>
+    </div>
+
+    <div>
+      <label for="page_expires_at">Expires at</label>
+      <%= f.text_field :expires_at %>
+    </div>
+  </fieldset>
+</div>
+
+<div class="additional-fields">
+  <p><%= link_to_function 'edit page metadata', 'new Effect.Appear("page-metadata")' %></p>
+  <fieldset id="page-metadata" style="display:none;">
+    <div>
+      <label for="page_meta_description">Description</label>
+      <%= f.text_area :meta_description, :class => 'small' %>
+    </div>
+
+    <div>
+      <label for="page_meta_keywords">Keywords</label>
+      <%= f.text_area :meta_keywords, :class => 'small' %>
+    </div>
+  </fieldset>
+</div>
+
+<div class="additional-fields">
+  <p><%= link_to_function 'edit page variables', 'new Effect.Appear("page-variables")' %></p>
+  <fieldset id="page-variables" style="display:none;">
+    <% page.page_variables.each do |var| %>
+    <div>
+      <%= text_field_tag "page[variable][#{var.id}][name]", var.name %>
+      <%= text_area_tag  "page[variable][#{var.id}][content]", var.content, :class => 'small' %>
+    </div>
+    <% end %>
+
+    <% (1..3).each do |i| %>
+    <div>
+      <%= text_field_tag "page[new_variable][#{i}][name]" %>
+      <%= text_area_tag  "page[new_variable][#{i}][content]", '', :class => 'small' %>
+    </div>
+    <% end %>
+  </fieldset>
+</div>
+<% end %>
