@@ -1,7 +1,11 @@
 ActionController::Routing::Routes.draw do |map|
   map.resources :users
-
   map.resource :session
+
+
+  map.signup  '/signup', :controller => 'users',   :action => 'new' 
+  map.login  '/login',  :controller => 'sessions', :action => 'new'
+  map.logout '/logout', :controller => 'sessions', :action => 'destroy'
 
   # The priority is based upon order of creation: first created -> highest priority.
 
@@ -38,6 +42,15 @@ ActionController::Routing::Routes.draw do |map|
   # map.root :controller => "welcome"
 
   # See how all your routes lay out with "rake routes"
+
+  map.workspace 'editor/home', :controller => 'editors', :action => 'show'
+  map.resources :audits
+  map.resources :editors
+  map.resources :pages
+  map.resources :page_templates
+  map.resource  :preview
+  map.resource  :sitemap
+  map.sandstone '*path', :controller => 'pages', :action => 'show'
 
   # Install the default routes as the lowest priority.
   # Note: These default routes make all actions in every controller accessible via GET requests. You should
