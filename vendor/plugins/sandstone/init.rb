@@ -2,7 +2,7 @@
 %w(models helpers).each do |code_dir|
   directory = File.join(File.dirname(__FILE__), 'lib', code_dir) 
   
-  Dependencies.load_paths << directory
+  #Dependencies.load_paths << directory
   $LOAD_PATH << directory
   
   if code_dir == 'helpers'
