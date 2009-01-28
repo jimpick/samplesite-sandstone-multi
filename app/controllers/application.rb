@@ -3,6 +3,7 @@
 
 class ApplicationController < ActionController::Base
 
+  include AuthenticatedSystem
   include SandstoneSystem
 
   helper :all # include all helpers, all the time
