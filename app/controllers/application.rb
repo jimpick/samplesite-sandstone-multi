@@ -16,4 +16,22 @@ class ApplicationController < ActionController::Base
   # Uncomment this to filter the contents of submitted sensitive data parameters
   # from your application log (in this case, all fields with names like "password"). 
   # filter_parameter_logging :password
+
+  # Multisite support
+  # http://railstips.org/2006/11/13/building-a-multi-site-supported-application
+  include AccountLocation
+
+  before_filter :find_current_site
+  helper_method :current_site
+  attr_reader   :current_site
+  helper_method :current_subsite
+  attr_reader   :current_subsite
+
+  private
+
+    def find_current_site
+      @current_site = Site.find_by_subdomain(account_subdomain)
+      @current_subsite = @current_site
+    end
+
 end

@@ -18,6 +18,16 @@
   <%= link_to 'log out', session_url, :method => :delete if logged_in? %>
 </div>
 
+<div id="debug">
+  <%= flash_messages %>
+  <% if current_site %>
+  <p>Debug current_site: <%= current_site.subdomain %></p>
+  <p>Debug current_subsite: <%= current_subsite.id %></p>
+  <% else %>
+  <p>Debug current_site: None</p>
+  <% end %>
+</div>
+
 <div id="sidebar">
   <ul>
     <% if editor %>
@@ -36,6 +46,13 @@
   <%= content_tag :p, flash[:notice], :class => 'notice' if flash[:notice] -%>
 
   <%= yield  %>
+</div>
+
+<div id="bottom_nav">
+  <ul>
+    <li><a href="http://pennyminder.example.com:3000/">PennyMinder</a></li>
+    <li><a href="http://ymbd.example.com:3000/">Your Money by Design</a></li>
+  </ul>
 </div>
 
 </body>
