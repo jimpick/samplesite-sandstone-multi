@@ -9,7 +9,7 @@ development:
   # Mysql Settings
   adapter: mysql
   encoding: utf8
-  database: samplesite_sandstone_development
+  database: samplesite_sandstone_multi_development
   username: root
   password:
   pool: 5
