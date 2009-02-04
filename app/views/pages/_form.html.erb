@@ -20,7 +20,7 @@
 
 <div>
   <label for="page_page_template_id">Template</label>
-  <%= PageTemplate.count > 0 ? f.select(:page_template_id, templates) : 'default' -%>
+  <%= PageTemplate.count > 0 ? f.select(:page_template_id, templates(current_subsite)) : 'default' -%>
 </div>
 
 <div>

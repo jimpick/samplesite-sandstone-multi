@@ -17,9 +17,12 @@ module Sandstone
           has_many :page_variables, :dependent => :destroy
           belongs_to :page_template
           belongs_to :editor
+          belongs_to :subsite, :polymorphic => true
 
           validates_presence_of   :status, :content
           validates_uniqueness_of :path
+          validates_presence_of :subsite_id
+          validates_presence_of :subsite_type
         end
 
         base.send(:include, Sandstone::Models::Caching)
@@ -104,16 +107,28 @@ module Sandstone
       end
 
       module ClassMethods
-        def find_roots(published_only = false)
+        def find_roots(current_subsite, published_only = false)
           unless published_only
-            find(:all, :conditions => {:parent_id => nil}, :include => :page_template)
+            find(:all, :conditions => {
+                :parent_id => nil,
+                :subsite_id => current_subsite.id,
+                :subsite_type => current_subsite.class.to_s
+              }, :include => :page_template)
           else
-            ::Page::Version.find(:all, :conditions => {:parent_id => nil, :status => 'published'})
+            ::Page::Version.find(:all, :conditions => {
+                :parent_id => nil,
+                :subsite_id => current_subsite.id,
+                :subsite_type => current_subsite.class.to_s,
+                :status => 'published'
+              })
           end
         end
 
-        def find_pending
-          find_all_by_status('pending')
+        def find_pending(current_subsite)
+          find_all_by_status('pending', :conditions => {
+            :subsite_id => current_subsite.id,
+            :subsite_type => current_subsite.class.to_s
+          })
         end
       end
     end

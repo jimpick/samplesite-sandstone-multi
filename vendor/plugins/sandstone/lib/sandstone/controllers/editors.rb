@@ -3,8 +3,11 @@ module Sandstone
     module Editors
       def show
         @page_title = 'Workspace'
-        @pages = editor.pages
-        @pending_pages = Page.find_pending if editor.manager?
+        @pages = Page.find_all_by_editor_id(editor.id, :conditions => {
+          :subsite_id => current_subsite.id,
+          :subsite_type => current_subsite.class.to_s
+        })
+        @pending_pages = Page.find_pending(current_subsite) if editor.manager?
       end
 
       def index

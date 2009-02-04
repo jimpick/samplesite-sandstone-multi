@@ -4,11 +4,14 @@ module Sandstone
 
       def index
         @page_title = 'Pages'
-        @pages = Page.find_roots
+        @pages = Page.find_roots(current_subsite)
       end
 
       def show
-        @page = Page.find_by_path(params[:path].join('/')) 
+        @page = Page.find_by_path(params[:path].join('/'), :conditions => {
+          :subsite_id => current_subsite.id,
+          :subsite_type => current_subsite.class.to_s
+        }) 
         current = @page.versions.find_by_status('published', :order => 'version DESC',
           :conditions => ['(active_at IS NULL AND expires_at IS NULL) OR (active_at IS NULL and expires_at >= ?) OR (active_at <= ? AND expires_at IS NULL) OR (? BETWEEN active_at AND expires_at)', Time.now, Time.now, Time.now]
         ) if @page
@@ -25,6 +28,7 @@ module Sandstone
       def new
         @page_title = 'Create a Page'
         @page = Page.new(:parent_id => params[:parent_id])
+        @page.subsite = current_subsite
       end
 
       def edit
@@ -38,6 +42,7 @@ module Sandstone
 
       def create
         @page = Page.new(params[:page].merge(:editor => editor))
+        @page.subsite = current_subsite
 
         if @page.save
           Audit.log('create', editor, @page)
@@ -52,7 +57,10 @@ module Sandstone
       end
 
       def update
-        @page = Page.find(params[:id])
+        @page = Page.find(params[:id], :conditions => {
+          :subsite_id => current_subsite.id,
+          :subsite_type => current_subsite.class.to_s
+        }) 
         page_params = params[:page]
         page_params.merge(:editor => editor) unless page_params[:editor_id]
         
@@ -69,7 +77,11 @@ module Sandstone
       end
 
       def destroy
-        @page = Page.find(params[:id])
+        @page = Page.find(params[:id], :conditions => {
+          :subsite_id => current_subsite.id,
+          :subsite_type => current_subsite.class.to_s
+        }) 
+
         Audit.log('destroy', editor, nil, "#{@page.title} (#{@page.path}) destroyed")
         @page.destroy
 

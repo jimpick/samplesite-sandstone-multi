@@ -20,9 +20,15 @@ module PagesHelper
     options_for_select(versions_array, page.version)
   end
 
-  def templates
+  def templates(current_subsite)
     available = [['default', '']]
-    templates = PageTemplate.find(:all, :select => 'id, name').map {|p| [p.name, p.id]} 
+    templates = PageTemplate.find(:all,
+      :select => 'id, name',
+      :conditions => {
+        :subsite_id => current_subsite.id,
+        :subsite_type => current_subsite.class.to_s
+      }
+    ).map {|p| [p.name, p.id]} 
     available = templates.empty? ? available : available + templates
   end
 

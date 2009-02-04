@@ -12,8 +12,12 @@ module Sandstone
           has_many :pages,  :dependent => :nullify
           has_many :audits, :dependent => :destroy, :as => :record
 
+          belongs_to :subsite, :polymorphic => true
+
           validates_presence_of   :name
           validates_uniqueness_of :name
+          validates_presence_of :subsite_id
+          validates_presence_of :subsite_type
         end
 
         base.send(:include, Sandstone::Models::Caching)
