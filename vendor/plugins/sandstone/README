@@ -1,5 +1,5 @@
-Sandstone
-=========
+Sandstone (with multisite modification)
+=======================================
 
 Introduction goes here.
 
@@ -14,6 +14,14 @@ You do not need to use the RESTful Authentication plugin to use Sandstone, but i
 
 +current_user+ must return an object that can match up with Sandstone's +editor+ object. +access_denied+ should handle redirection and messaging when a non-editor tried to visit an administrative page.
 
+The multisite modification also uses a polymorphic association for its idea of a +subsite+. This might be associated with a site record in your application.
+
+Other Plugins
+=============
+
+The account_location plugin can be used to create a multisite setup, following the instructions here:
+
+  http://railstips.org/2006/11/13/building-a-multi-site-supported-application
 
 Models
 ======
@@ -53,6 +61,35 @@ You must add the following routes (or similar ones) to your config/routes.rb fil
   map.resource  :sitemap
   map.sandstone '*path', :controller => 'pages', :action => 'show'
 
+=== Multisite Integration
+
+In your site model:
+
+  has_many :page_templates, :as => :subsite
+  has_many :pages, :as => :subsite
+
+If you are using the account_location plugin, you can add
+the following to the application controller:
+
+    include AccountLocation
+
+    before_filter :find_current_site
+    helper_method :current_site
+    attr_reader   :current_site
+    helper_method :current_subsite
+    attr_reader   :current_subsite
+
+    private
+
+      def find_current_site
+        @current_site = Site.find_by_subdomain(account_subdomain)
+        @current_subsite = @current_site
+      end
+
+The modified 'pages' and 'page_templates' controllers use whatever
+is returned by 'current_subsite' to tie a page or template to a
+particular subsite.
+
 
 Example
 =======
@@ -61,3 +98,4 @@ Example goes here.
 
 
 Copyright (c) 2007 Ben Scofield, released under the MIT license
+Modifications Copyright (c) 2009 Jim Pick <jim@jimpick.com>, released under the MIT license
