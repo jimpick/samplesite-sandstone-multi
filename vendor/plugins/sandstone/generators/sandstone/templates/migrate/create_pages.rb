@@ -5,6 +5,8 @@ class CreatePages < ActiveRecord::Migration
         t.integer  :parent_id, :page_template_id, :editor_id, :null => true
         t.string   :status,  :limit => 32, :default => 'new'
         t.string   :path,    :limit => 255
+        t.integer  :subsite_id, :null => false
+        t.string   :subsite_type, :null => false
         t.string   :title,   :limit => 255, :null => true
         t.text     :content, :summary, :meta_description, :meta_keywords, :null => true
         t.datetime :created_at, :updated_at

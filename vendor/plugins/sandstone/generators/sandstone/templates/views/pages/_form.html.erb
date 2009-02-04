@@ -6,12 +6,12 @@
   <%= defined?(root_url) ? root_url : 'http://YOURSITE/' %><%= f.text_field :path %>
 </div>
 
-<% if editor.manager? && !page.new_record? -%>
+<%# if editor.manager? && !page.new_record? -%>
 <div>
   <label for="page_editor_id">Assigned To</label>
-  <%= f.select :editor_id, editors_for(page) %>
+  <%#= f.select :editor_id, editors_for(page) %>
 </div>
-<% end -%>
+<%# end -%>
 
 <div>
   <label for="page_parent_id">Parent Page</label>
@@ -20,7 +20,7 @@
 
 <div>
   <label for="page_page_template_id">Template</label>
-  <%= PageTemplate.count > 0 ? f.select(:page_template_id, templates) : 'default' -%>
+  <%= PageTemplate.count > 0 ? f.select(:page_template_id, templates(current_subsite)) : 'default' -%>
 </div>
 
 <div>
